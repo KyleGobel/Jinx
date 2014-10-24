@@ -1,0 +1,21 @@
+﻿@inherits ServiceStack.Razor.ViewPage<System.Collections.Generic.List<Jinx.Models.Types.Database>> 
+
+@{
+    ViewBag.Title = "Databases";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<div ng-app="databaseModule" ng-controller="databaseCtrl">
+    {{name}}
+</div>
+This is the database page
+
+
+@section scripts {
+    <script>
+        angular.module("databaseModule", [])
+            .controller("databaseCtrl", function($scope) {
+                $scope.name = "hello";
+            });
+    </script>
+}
