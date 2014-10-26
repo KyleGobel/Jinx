@@ -73,8 +73,10 @@
     <EmbeddedResource Include="fonts\Material-Design-Icons.ttf" />
     <EmbeddedResource Include="fonts\Material-Design-Icons.woff" />
     <EmbeddedResource Include="Views\Database.cshtml" />
+    <EmbeddedResource Include="js\angular.min.js.map" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\Shared\Layout.cshtml" />
+    <EmbeddedResource Include="Jobs\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="css\material-wfont.css" />
@@ -97,6 +99,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="js\angular.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="js\app\services\api.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\bootstrap.css" />
+    <EmbeddedResource Include="templates\mapReduce.html" />
+    <EmbeddedResource Include="templates\sourceDatabaseAndQuery.html" />
+    <EmbeddedResource Include="templates\sourceDataModel.html" />
+    <EmbeddedResource Include="templates\destinationDatabase.html" />
+    <EmbeddedResource Include="js\ui-ace.js" />
+    <Content Include="js\ui-ace.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

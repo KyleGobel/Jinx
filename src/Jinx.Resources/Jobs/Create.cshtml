@@ -1,0 +1,118 @@
+﻿@inherits ServiceStack.Razor.ViewPage
+    @{
+        ViewBag.Title = "Create Job";
+        Layout = "~/Views/Shared/Layout.cshtml";
+    }
+
+    @section head {
+        <style>
+            .ace_editor {
+                height: 300px;
+            }
+        </style>
+    }
+    <div ng-app="jobModule" ng-controller="jobCtrl">
+        <div class="container">
+            <div ng-show="showSuccess" class="alert alert-success">
+                <button type="button" class="close" ng-click="showSuccess = false;">x</button>
+                <strong>Success!</strong> The job was successfully saved!
+            </div>
+            <div ng-show="showError" class="alert alert-danger">
+                <button ng-click="showError = false;" type="button" class="close">x</button>
+                <strong>Error!</strong> {{errorMessage}}
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="text" class="form-control" ng-model="jobName" placeholder="Job Name" />
+                </div>
+            </div>
+            <br /><br />
+            
+           
+
+            <div ng-include="'/templates/sourceDatabaseAndQuery.html'"></div>
+            <div ng-include="'/templates/sourceDataModel.html'"></div>
+            <div ng-include="'/templates/destinationDatabase.html'"></div>
+            <div ng-include="'/templates/mapReduce.html'"></div>
+
+       
+            <div class="row">
+                <div class="col-md-12" style="text-align:right">
+                    <button class="btn btn-primary btn-lg" ng-click="addJob()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section scripts {
+        <script>
+            angular.module("jobModule", ['ui.ace', 'api'])
+                .controller("jobCtrl", function($scope, jobApi, databaseApi) {
+                    init();
+
+                    function init() {
+                        $scope.showSuccess = false;
+                        $scope.showError = false;
+                        $scope.aceOption = {
+                            useWrapMode: true,
+                            mode: 'sql',
+                            theme: 'github',
+                        }
+
+                        databaseApi.getAll()
+                            .then(function(results) {
+                                console.log(results);
+                                $scope.databases = results;
+                            }, function(error) {
+                                $scope.errorMessage = error;
+                                $scope.showError = true;
+                            });
+
+                        $scope.destinationModel = "public class DestinationModel { }";
+                        $scope.mapCs = "public List<DestinationModel> Transform(List<SourceModel> data) { }";
+                    }
+
+                    $scope.addJob = function() {
+                        if (typeof $scope.database === "undefined") {
+                            $scope.errorMessage = "Must select a database";
+                            $scope.showError = true;
+                        }
+                        var model = {
+                            name: $scope.jobName,
+                            sourceSql: $scope.sourceSql,
+                            sourceDatabaseId: $scope.sourceDatabase.databaseId,
+                            destinationDatabaseId: $scope.destinationDatabase.databaseId,
+                            sourceModelCs: $scope.sourceModel,
+                            destinationModelCs: $scope.destinationModel,
+                            destinationTableName: $scope.destinationTableName,
+                            mapCs: $scope.mapCs
+                        };
+
+                        jobApi.insert(model)
+                            .then(function() {
+                                $scope.showSuccess = true;
+                            }, function(error) {
+                                $scope.errorMessage = error;
+                                $scope.showError = true;
+                            });
+                    }
+
+                    $scope.buildModel = function() {
+                        if (typeof $scope.database === "undefined") {
+                            $scope.errorMessage = "Must select a database";
+                            $scope.showError = true;
+                        }
+
+                        jobApi.buildModel($scope.database.databaseId, $scope.sourceSql)
+                            .then(function(response) {
+                                $scope.sourceModel = response;
+                            }, function(error) {
+                                $scope.errorMessage = error;
+                                $scope.showError = true;
+                            });
+                    }
+
+                });
+        </script>
+    }

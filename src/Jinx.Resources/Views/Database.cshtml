@@ -6,16 +6,83 @@
 }
 
 <div ng-app="databaseModule" ng-controller="databaseCtrl">
-    {{name}}
+    <div class="container">
+        <div ng-show="showSuccess" class="alert alert-success">
+            <button type="button" class="close" ng-click="showSuccess = false;">x</button>
+            <strong>Success!</strong> The database connection was added, refresh the page to see it here.
+        </div>
+        <div ng-show="showError" class="alert alert-danger">
+            <button ng-click="showError = false;" type="button" class="close">x</button>
+            <strong>Error!</strong> {{errorMessage}}
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <input type="text" class="form-control" ng-model="name" placeholder="Name"/>
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" ng-model="connectionString" placeholder="Connection String"/>
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" ng-model="type" placeholder="Database Type"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-4" style="text-align:right;">
+                <button class="btn btn-lg btn-primary" ng-click="addNew()">Add New</button>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td></td>
+                    <td>Name</td>
+                    <td>Type</td>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td></td>
+                    <td>@item.Name</td>
+                    <td>@item.Type</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        
+    </div>
 </div>
-This is the database page
 
 
 @section scripts {
     <script>
-        angular.module("databaseModule", [])
-            .controller("databaseCtrl", function($scope) {
-                $scope.name = "hello";
+        angular.module("databaseModule", ['api'])
+            .controller("databaseCtrl", function($scope, databaseApi) {
+
+                init();
+
+                function init() {
+                    $scope.showSuccess = false;
+                    $scope.showError = false;
+                    $scope.errorMessage = "";
+                }
+
+                $scope.addNew = function() {
+                    var db = {
+                        name: $scope.name,
+                        connectionString: $scope.connectionString,
+                        type: $scope.type
+                    };
+
+                    databaseApi.insert(db).then(function() {
+                        $scope.showSuccess = true;
+                    }, function(error) {
+                        $scope.errorMessage = error;
+                        $scope.showError = true;
+                    });
+                }
             });
     </script>
 }

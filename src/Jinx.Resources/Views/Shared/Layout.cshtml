@@ -5,8 +5,8 @@
 
     <title>Jinx | @ViewBag.Title</title>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/ripples.min.css" rel="stylesheet">
-    <link href="css/material-wfont.min.css" rel="stylesheet">
+    <link href="~/css/ripples.min.css" rel="stylesheet">
+    <link href="~/css/material-wfont.min.css" rel="stylesheet">
 
     @RenderSection("head")
 </head>
@@ -14,7 +14,7 @@
     <nav class="navbar navbar-default" role="navigation">
         <a class="navbar-brand" href="/">Jinx</a>
         <div class="container-fluid">
-            <button type="button" class="btn btn-default">Jobs</button>
+            <a href="/job" type="button" class="btn btn-default">Jobs</a>
             <a href="/database" class="btn btn-default">Database Servers</a>
         </div>
     </nav>
@@ -25,9 +25,12 @@
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
-    <script src="js/ripples.min.js"></script>
-    <script src="js/material.min.js"></script>
-    <script src="js/angular.min.js"></script>
+    <script src="~/js/ripples.min.js"></script>
+    <script src="~/js/material.min.js"></script>
+    <script src="~/js/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
+    <script src="~/js/ui-ace.js"></script>
+    <script src="~/js/app/services/api.js"></script>
     @RenderSection("scripts")
 </body>
 </html>

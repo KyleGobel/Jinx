@@ -13,6 +13,7 @@ using ServiceStack;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 using ServiceStack.Razor;
+using ServiceStack.Text;
 
 namespace Jinx
 {
@@ -22,6 +23,7 @@ namespace Jinx
 
         public override void Configure(Container container)
         {
+            JsConfig.EmitCamelCaseNames = true;
             container.Register<IDbConnectionFactory>(c => new OrmLiteConnectionFactory("Data Source=jinx.db;Version=3;", SqliteDialect.Provider));
             SetConfig(new HostConfig()
             {
@@ -35,6 +37,7 @@ namespace Jinx
             using (var db = container.Resolve<IDbConnectionFactory>().Open())
             {
                 db.CreateTableIfNotExists<Database>();
+                db.CreateTableIfNotExists<Job>();
             }
             AddRoutes();
         }
@@ -42,6 +45,11 @@ namespace Jinx
         public void AddRoutes()
         {
             Routes.Add<GetDatabases>("/database", "GET");
+            Routes.Add<Database>("/database", "POST");
+            Routes.Add<GetJobs>("/job", "GET");
+            Routes.Add<Job>("/job", "POST");
+            Routes.Add<RunJob>("/runJob/{JobId}", "GET")
+                .Add<BuildModel>("/job/buildModel", "POST");
         }
     }
     class Program

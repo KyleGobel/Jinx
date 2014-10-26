@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Source Data Model</div>
+            <div class="panel-body">
+                Click the <strong>Build Model</strong> button to build your C# model from the sql entered above (warning the above sql query will be executed), or
+                enter the source model manually below.
+                <br />
+                <button type="button" class="btn btn-info" ng-click="buildModel()">Build Model</button>
+                <div ui-ace="{
+                             useWrapMode: true,
+                             mode: 'csharp',
+                             theme: 'github'}" ng-model="sourceModel"></div>
+
+                <br />
+                <div class="alert alert-warning">
+                    <h4>Warning!</h4>
+                    <p>
+                        Due to SqlDataReader being built like a hundred years ago, we have no fast way to detect if a field type is nullable,
+                        therefore any fields that might have a null value should be changed to <code>Nullable&lt;T&gt;</></code> in the model manually
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
