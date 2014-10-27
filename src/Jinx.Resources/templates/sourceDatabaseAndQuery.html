@@ -7,12 +7,12 @@
             <div class="panel-body">
                 <label>
                     Select a database
-                    <select class="form-control" ng-model="sourceDatabase" ng-options="d.name for d in databases"></select>
+                    <select class="form-control" ng-model="viewModel.sourceDatabase" ng-options="d.name for d in viewModel.databases"></select>
                 </label>
                 <br />
                 <label>Enter your source sql query (the query that will get the data we want to perform an operation on)</label>
                 <br />
-                <div ui-ace="aceOption" ng-model="sourceSql"></div>
+                <div ui-ace="aceOption" ng-model="job.sourceSql"></div>
             </div>
         </div>
     </div>

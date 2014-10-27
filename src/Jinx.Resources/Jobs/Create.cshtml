@@ -11,25 +11,16 @@
             }
         </style>
     }
-    <div ng-app="jobModule" ng-controller="jobCtrl">
+    <div ng-app="jinx" ng-controller="jobCtrl">
         <div class="container">
-            <div ng-show="showSuccess" class="alert alert-success">
-                <button type="button" class="close" ng-click="showSuccess = false;">x</button>
-                <strong>Success!</strong> The job was successfully saved!
-            </div>
-            <div ng-show="showError" class="alert alert-danger">
-                <button ng-click="showError = false;" type="button" class="close">x</button>
-                <strong>Error!</strong> {{errorMessage}}
-            </div>
             <div class="row">
                 <div class="col-md-12">
-                    <input type="text" class="form-control" ng-model="jobName" placeholder="Job Name" />
+                    <input type="text" class="form-control" ng-model="job.name" placeholder="Job Name" />
                 </div>
             </div>
             <br /><br />
-            
-           
-
+            <button data-toggle="modal" data-target="#myModal">Show</button>
+            <div ng-include="'/templates/model.html'"></div>
             <div ng-include="'/templates/sourceDatabaseAndQuery.html'"></div>
             <div ng-include="'/templates/sourceDataModel.html'"></div>
             <div ng-include="'/templates/destinationDatabase.html'"></div>
@@ -38,6 +29,7 @@
        
             <div class="row">
                 <div class="col-md-12" style="text-align:right">
+                    <button class="btn btn-info btn-lg" ng-click="compile()"></button>
                     <button class="btn btn-primary btn-lg" ng-click="addJob()">Save</button>
                 </div>
             </div>
@@ -47,13 +39,14 @@
 
     @section scripts {
         <script>
-            angular.module("jobModule", ['ui.ace', 'api'])
-                .controller("jobCtrl", function($scope, jobApi, databaseApi) {
+            angular.module("jinx", ['ui.ace', 'api'])
+                .controller("jobCtrl", function($scope, jobApi, databaseApi, compileApi) {
                     init();
 
                     function init() {
-                        $scope.showSuccess = false;
-                        $scope.showError = false;
+                        $scope.job = {};
+                        $scope.modal = {};
+                        $scope.viewModel = {};
                         $scope.aceOption = {
                             useWrapMode: true,
                             mode: 'sql',
@@ -62,54 +55,72 @@
 
                         databaseApi.getAll()
                             .then(function(results) {
-                                console.log(results);
-                                $scope.databases = results;
+                                $scope.viewModel.databases = results;
                             }, function(error) {
-                                $scope.errorMessage = error;
-                                $scope.showError = true;
+                                toastr.error(error);
                             });
 
-                        $scope.destinationModel = "public class DestinationModel { }";
-                        $scope.mapCs = "public List<DestinationModel> Transform(List<SourceModel> data) { }";
+                        $scope.job.destinationModelCs = "public class DestinationModel\n{\n\t//Destination table columns here\n}";
+                        $scope.job.mapCs = "public List<DestinationModel> Transform(List<SourceModel> data)\n{\n\t//transform data here\n}";
                     }
 
                     $scope.addJob = function() {
-                        if (typeof $scope.database === "undefined") {
-                            $scope.errorMessage = "Must select a database";
-                            $scope.showError = true;
+                        if (typeof $scope.viewModel.sourceDatabase.databaseId === "undefined") {
+                            toastr.error("Must select a database");
                         }
-                        var model = {
-                            name: $scope.jobName,
-                            sourceSql: $scope.sourceSql,
-                            sourceDatabaseId: $scope.sourceDatabase.databaseId,
-                            destinationDatabaseId: $scope.destinationDatabase.databaseId,
-                            sourceModelCs: $scope.sourceModel,
-                            destinationModelCs: $scope.destinationModel,
-                            destinationTableName: $scope.destinationTableName,
-                            mapCs: $scope.mapCs
-                        };
-
-                        jobApi.insert(model)
+                        $scope.job.sourceDatabaseId = $scope.viewModel.sourceDatabase.databaseId;
+                        $scope.job.destinationDatabaseId = $scope.viewModel.destinationDatabase.databaseId;
+                        jobApi.insert($scope.job)
                             .then(function() {
-                                $scope.showSuccess = true;
+                                toastr.success("Job was created successfully!");
                             }, function(error) {
-                                $scope.errorMessage = error;
-                                $scope.showError = true;
+                                toastr.error(error);
                             });
                     }
 
                     $scope.buildModel = function() {
-                        if (typeof $scope.database === "undefined") {
-                            $scope.errorMessage = "Must select a database";
-                            $scope.showError = true;
+                        if (typeof $scope.viewModel.sourceDatabase.databaseId === "undefined") {
+                            toastr.error("Must select a database");
                         }
+                        $scope.job.sourceDatabaseId = $scope.viewModel.sourceDatabase.databaseId;
 
-                        jobApi.buildModel($scope.database.databaseId, $scope.sourceSql)
+                        jobApi.buildModel($scope.job.sourceDatabaseId, $scope.job.sourceSql)
                             .then(function(response) {
-                                $scope.sourceModel = response;
+                                $scope.job.sourceModelCs = response;
                             }, function(error) {
-                                $scope.errorMessage = error;
-                                $scope.showError = true;
+                                toastr.error(error);
+                            });
+                    }
+
+                    $scope.compile = function() {
+                        compileApi.compileAll($scope.job.sourceModelCs,$scope.job.destinationModelCs,$scope.job.mapCs)
+                          .then(function (response) {
+                              $scope.modal.title = "Job Compile Results";
+                              $scope.modal.body = response;
+                              $("#modal").modal();
+                          }, function (error) {
+                              toastr.error(error);
+                          });
+                    }
+
+                    $scope.compileDestinationModel = function() {
+                        compileApi.compile($scope.job.destinationModelCs, "destinationModel")
+                            .then(function(response) {
+                                $scope.modal.title = "Destination Model Compile Results";
+                                $scope.modal.body = response;
+                                $("#modal").modal();
+                            }, function(error) {
+                                toastr.error(error);
+                            });
+                    }
+                    $scope.compileSourceModel = function() {
+                        compileApi.compile($scope.job.sourceModelCs, "sourceModel")
+                            .then(function(response) {
+                                $scope.modal.title = "Source Model Compile Results";
+                                $scope.modal.body = response;
+                                $('#modal').modal();
+                            }, function(error) {
+                                toastr.error(error);
                             });
                     }
 

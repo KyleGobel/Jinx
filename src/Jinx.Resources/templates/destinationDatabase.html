@@ -5,12 +5,12 @@
             <div class="panel-body">
                 <label>
                     Select your destination database
-                    <select ng-options="d.name for d in databases" class="form-control" ng-model="destinationDatabase"></select>
+                    <select ng-options="d.name for d in viewModel.databases" class="form-control" ng-model="viewModel.destinationDatabase"></select>
                 </label>
                 <br />
                 <label>
                     Enter the destination table name
-                    <input type="text" class="form-control" ng-model="destinationTableName" placeholder="Destination Table Name" />
+                    <input type="text" class="form-control" ng-model="job.destinationTableName" placeholder="Destination Table Name" />
                 </label>
                 <br />
                 Create the C# Model of your destination table
@@ -18,9 +18,10 @@
                 <div ui-ace="{
                              useWrapMode: true,
                              mode: 'csharp',
-                             theme: 'github'}" ng-model="destinationModel"></div>
+                             theme: 'github'}" ng-model="job.destinationModelCs"></div>
 
                 <br />
+                <button class="btn btn-primary" ng-click="compileDestinationModel()">Compile</button>
             </div>
         </div>
     </div>

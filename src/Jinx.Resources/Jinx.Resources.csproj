@@ -105,11 +105,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\bootstrap.css" />
+    <EmbeddedResource Include="templates\model.html" />
+    <EmbeddedResource Include="js\ui-bootstrap-0.9.0.min.js" />
     <EmbeddedResource Include="templates\mapReduce.html" />
     <EmbeddedResource Include="templates\sourceDatabaseAndQuery.html" />
     <EmbeddedResource Include="templates\sourceDataModel.html" />
     <EmbeddedResource Include="templates\destinationDatabase.html" />
     <EmbeddedResource Include="js\ui-ace.js" />
+    <EmbeddedResource Include="css\toastr.css" />
+    <EmbeddedResource Include="js\toastr.js" />
     <Content Include="js\ui-ace.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

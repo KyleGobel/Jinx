@@ -8,9 +8,10 @@
                 <div ui-ace="{
                              useWrapMode: true,
                              mode: 'csharp',
-                             theme: 'github'}" ng-model="mapCs"></div>
+                             theme: 'github'}" ng-model="job.mapCs"></div>
 
                 <br />
+                <button type="button" class="btn btn-primary" ng-click="compile()">Compile</button>
             </div>
         </div>
 

@@ -1,12 +1,16 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using Jinx.Models;
 using Jinx.Models.Types;
+using Microsoft.CSharp;
 using ServiceStack;
 using ServiceStack.OrmLite;
+using ServiceStack.OrmLite.Dapper;
 
 namespace Jinx.Services
 {
@@ -42,7 +46,7 @@ namespace Jinx.Services
             }
             catch (Exception ex)
             {
-               return new HttpResult(HttpStatusCode.BadRequest, ex.Message); 
+               return new HttpResult(HttpStatusCode.BadRequest, ex.Message.Replace("\r\n", "")); 
             }
         }
 
@@ -60,13 +64,37 @@ namespace Jinx.Services
                 return HttpError.NotFound("Couldn't find job with that job id");
             }
 
-            var dbService = ResolveService<DatabaseService>();
-            var database = dbService.Get(new GetDatabase {DatabaseId = job.SourceDatabaseId})
-                .GetResponseDto<Database>();
-            var typeNameDictionary = BuildSrcModelDictionary(database.ConnectionString, database.Type, job.SourceSql);
-            var model = BuildModel(typeNameDictionary);
+            RunJob(job);
             return null;
 
+        }
+
+        private int RunJob(Job job)
+        {
+            var dbService = ResolveService<DatabaseService>();
+            var srcDb = dbService.Get(new GetDatabase {DatabaseId = job.SourceDatabaseId})
+                .GetResponseDto<Database>();
+
+            //Get src type
+
+            var compilerService = ResolveService<CompilerService>();
+            var compileResults = compilerService.Compile(job.SourceModelCs, job.DestinationModelCs, job.MapCs);
+
+
+            if (compileResults.Errors.HasErrors)
+            {
+                throw new Exception("Compile has errors, edit the job to fix the errors");
+            }
+            var srcType = compileResults.CompiledAssembly.GetType("SourceModel");
+            var destType = compileResults.CompiledAssembly.GetType("DestinationModel");
+
+            using (var conn = new SqlConnection(srcDb.ConnectionString))
+            {
+                var items = conn.Query(srcType, job.SourceSql).ToList();
+                
+            }
+
+            return 0;
         }
 
         public HttpResult Post(BuildModel request)

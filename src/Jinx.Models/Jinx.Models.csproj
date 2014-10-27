@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compile.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="Types\Database.cs" />

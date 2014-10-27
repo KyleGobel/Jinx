@@ -17,6 +17,7 @@ angular.module("api", [])
                 });
             return d.promise;
         }
+
         function insert(databaseModel) {
             var d = $q.defer();
 
@@ -55,35 +56,70 @@ angular.module("api", [])
             return d.promise;
         }
     })
-.factory('jobApi', function($http, $q) {
+    .factory('jobApi', function($http, $q) {
 
-    return {
-        insert: insert,
-        buildModel: buildModel
-    };
-    function insert(jobModel) {
-        var d = $q.defer();
-        $http.post("/job", jobModel)
-            .then(function(response) {
-                d.resolve(response);
+        return {
+            insert: insert,
+            buildModel: buildModel
+        };
+
+        function insert(jobModel) {
+            var d = $q.defer();
+            $http.post("/job", jobModel)
+                .then(function(response) {
+                    d.resolve(response);
+                }, function(error) {
+                    d.reject(error.data);
+                });
+            return d.promise;
+        }
+
+        function buildModel(databaseId, sourceSql) {
+            var d = $q.defer();
+
+            $http.post("/job/buildModel", {
+                databaseId: databaseId,
+                sql: sourceSql
+            }).then(function(response) {
+                d.resolve(response.data);
             }, function(error) {
                 d.reject(error.data);
             });
-        return d.promise;
-    }
+            return d.promise;
+        }
+    })
+    .factory('compileApi', function($http, $q) {
+        return {
+            compile: compile,
+            compileAll: compileAll
+        };
 
-    function buildModel(databaseId, sourceSql) {
-        var d = $q.defer();
+        function compile(src, type) {
+            var d = $q.defer();
+            $http.post("/compile", {
+                    source: src,
+                    type: type
+                })
+                .then(function(response) {
+                    d.resolve(response.data);
+                }, function(error) {
+                    d.reject(error.data);
+                });
+            return d.promise;
+        }
 
-        $http.post("/job/buildModel", {
-            databaseId: databaseId,
-            sql: sourceSql
-        }).then(function(response) {
-            d.resolve(response.data);
-        }, function(error) {
-            d.reject(error.data);
-        });
-        return d.promise;
-    }
-
-});
+        function compileAll(srcModel, destModel, map) {
+            var d = $q.defer();
+            $http.post("/compileAll", {
+                    sourceModel: srcModel,
+                    destinationModel: destModel,
+                    map: map,
+                })
+                .then(function(response) {
+                    d.resolve(response.data);
+                }, function(error) {
+                    d.reject(error.data);
+                });
+            return d.promise;
+        }
+    });

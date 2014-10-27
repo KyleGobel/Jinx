@@ -10,8 +10,10 @@
                 <div ui-ace="{
                              useWrapMode: true,
                              mode: 'csharp',
-                             theme: 'github'}" ng-model="sourceModel"></div>
+                             theme: 'github'}" ng-model="job.sourceModelCs"></div>
 
+                <br/>
+                <button type="button" class="btn btn-primary" ng-click="compileSourceModel()">Compile</button>
                 <br />
                 <div class="alert alert-warning">
                     <h4>Warning!</h4>
