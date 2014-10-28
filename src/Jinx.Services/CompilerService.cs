@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Net;
 using Jinx.Models;
 using Microsoft.CSharp;
@@ -20,7 +21,6 @@ namespace Jinx.Services
             //var assemblyFile = "gen" + Guid.NewGuid().ToString("N") + ".dll";
 
             var results = Compile(request.SourceModel, request.DestinationModel, request.Map);
-
             if (results.Errors.HasErrors)
             {
                 for (int i = 0; i < results.Errors.Count; i++)
@@ -38,13 +38,18 @@ namespace Jinx.Services
 
         public CompilerResults Compile(params string[] sources)
         {
-             var provider = new CSharpCodeProvider();
+             var provider = new CSharpCodeProvider(new Dictionary<string, string> {{ "CompilerVersion", "v4.0"}});
             var parameters = new CompilerParameters
             {
                 GenerateExecutable = false,
-                GenerateInMemory = true
+                GenerateInMemory = true,
             };
 
+            parameters.ReferencedAssemblies.Add("System.dll");
+            parameters.ReferencedAssemblies.AddRange(new [] {"System.dll", "mscorlib.dll", "System.Data.dll","System.Core.dll", "System.Data.Linq.dll" });
+            parameters.ReferencedAssemblies.Add("ServiceStack.dll");
+            parameters.ReferencedAssemblies.Add("ServiceStack.Text.dll");
+            
             return provider.CompileAssemblyFromSource(parameters, sources);
         }
 

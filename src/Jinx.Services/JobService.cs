@@ -1,10 +1,12 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using Chronos;
 using Jinx.Models;
 using Jinx.Models.Types;
 using Microsoft.CSharp;
@@ -22,6 +24,7 @@ namespace Jinx.Services
             return Db.Select<Job>();
         }
 
+        [DefaultView("EditJob")]
         public HttpResult Get(GetJob request)
         {
             if (request == null || request.JobId == default(int))
@@ -75,6 +78,9 @@ namespace Jinx.Services
             var srcDb = dbService.Get(new GetDatabase {DatabaseId = job.SourceDatabaseId})
                 .GetResponseDto<Database>();
 
+            var destDb = dbService.Get(new GetDatabase {DatabaseId = job.DestinationDatabaseId})
+                .GetResponseDto<Database>();
+
             //Get src type
 
             var compilerService = ResolveService<CompilerService>();
@@ -87,12 +93,31 @@ namespace Jinx.Services
             }
             var srcType = compileResults.CompiledAssembly.GetType("SourceModel");
             var destType = compileResults.CompiledAssembly.GetType("DestinationModel");
+            var transformerType = compileResults.CompiledAssembly.GetType("Transformer");
 
+            var listType = typeof (List<>);
+
+            var srcListType = listType.MakeGenericType(srcType);
+
+            var items = Activator.CreateInstance(srcListType);
+            var srcItems = default(List<object>);
             using (var conn = new SqlConnection(srcDb.ConnectionString))
             {
-                var items = conn.Query(srcType, job.SourceSql).ToList();
-                
+                srcItems = conn.Query(srcType, job.SourceSql).ToList();
             }
+
+            var method = srcListType.GetMethod("Add");
+            foreach (var i in srcItems)
+            {
+                var newItem = Convert.ChangeType(i, srcType);
+                method.Invoke(items, new[] {newItem});
+            }
+
+            var transformMethod = transformerType.GetMethods(BindingFlags.Static | BindingFlags.Public).First();
+            var result = transformMethod.Invoke(null, new[] {items});
+
+            var bcp = new BulkInserter(destDb.ConnectionString, destType);
+            bcp.Insert((IEnumerable)result,job.DestinationTableName);
 
             return 0;
         }

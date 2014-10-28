@@ -1,0 +1,123 @@
+﻿@using ServiceStack.Html
+@inherits ServiceStack.Razor.ViewPage<Jinx.Models.Types.Job>
+@{
+    ViewBag.Title = "Create Job";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+@section head {
+    <style>
+        .ace_editor {
+            height: 300px;
+        }
+    </style>
+}
+<div ng-app="jinx" ng-controller="editJobCtrl">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="text" class="form-control" ng-model="job.name" placeholder="Job Name" />
+            </div>
+        </div>
+        <br /><br />
+        <button data-toggle="modal" data-target="#myModal">Show</button>
+        <div ng-include="'/templates/model.html'"></div>
+        <div ng-include="'/templates/sourceDatabaseAndQuery.html'"></div>
+        <div ng-include="'/templates/sourceDataModel.html'"></div>
+        <div ng-include="'/templates/destinationDatabase.html'"></div>
+        <div ng-include="'/templates/mapReduce.html'"></div>
+
+
+        <div class="row">
+            <div class="col-md-12" style="text-align:right">
+                <button class="btn btn-info btn-lg" ng-click="compile()"></button>
+                <button class="btn btn-primary btn-lg" ng-click="updateJob()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        angular.module("jinx", ['ui.ace', 'api'])
+            .controller("editJobCtrl", function($scope, jobApi, databaseApi, compileApi) {
+
+                init();
+
+                function init() {
+                    $scope.job = @Model.AsRawJson();
+                    $scope.modal = {};
+                    $scope.viewModel = {};
+                    $scope.aceOption = {
+                        useWrapMode: true,
+                        mode: 'sql',
+                        theme: 'github',
+                    }
+
+                    databaseApi.getAll()
+                        .then(function(results) {
+                            $scope.viewModel.databases = results;
+                            $scope.viewModel.sourceDatabase = _.find(results, function(item) { return item.databaseId == $scope.job.sourceDatabaseId; });
+                            $scope.viewModel.destinationDatabase = _.find(results, function(item) { return item.databaseId == $scope.job.destinationDatabaseId; });
+                        }, function(error) {
+                            toastr.error(error);
+                        });
+                }
+
+                $scope.updateJob = function() {
+                    jobApi.update($scope.job).then(function() {
+                        toastr.success("Job successfully updated");
+                    }, function(error) {
+                        toastr.error("Error updating job: " + error);
+                    });
+                }
+                $scope.buildModel = function() {
+                    if (typeof $scope.viewModel.sourceDatabase.databaseId === "undefined") {
+                        toastr.error("Must select a database");
+                    }
+                    $scope.job.sourceDatabaseId = $scope.viewModel.sourceDatabase.databaseId;
+
+                    jobApi.buildModel($scope.job.sourceDatabaseId, $scope.job.sourceSql)
+                        .then(function(response) {
+                            $scope.job.sourceModelCs = response;
+                        }, function(error) {
+                            toastr.error(error);
+                        });
+                }
+
+                $scope.compile = function() {
+                    compileApi.compileAll($scope.job.sourceModelCs, $scope.job.destinationModelCs, $scope.job.mapCs)
+                        .then(function(response) {
+                            $scope.modal.title = "Job Compile Results";
+                            $scope.modal.body = response;
+                            $("#modal").modal();
+                        }, function(error) {
+                            toastr.error(error);
+                        });
+                }
+
+                $scope.compileDestinationModel = function() {
+                    compileApi.compile($scope.job.destinationModelCs, "destinationModel")
+                        .then(function(response) {
+                            $scope.modal.title = "Destination Model Compile Results";
+                            $scope.modal.body = response;
+                            $("#modal").modal();
+                        }, function(error) {
+                            toastr.error(error);
+                        });
+                }
+                $scope.compileSourceModel = function() {
+                    compileApi.compile($scope.job.sourceModelCs, "sourceModel")
+                        .then(function(response) {
+                            $scope.modal.title = "Source Model Compile Results";
+                            $scope.modal.body = response;
+                            $('#modal').modal();
+                        }, function(error) {
+                            toastr.error(error);
+                        });
+                }
+            });
+
+    </script>
+}

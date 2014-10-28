@@ -60,7 +60,8 @@ angular.module("api", [])
 
         return {
             insert: insert,
-            buildModel: buildModel
+            buildModel: buildModel,
+            update: update
         };
 
         function insert(jobModel) {
@@ -71,6 +72,18 @@ angular.module("api", [])
                 }, function(error) {
                     d.reject(error.data);
                 });
+            return d.promise;
+        }
+
+        function update(jobModel) {
+            var d = $q.defer();
+
+            $http.put("/job", jobModel)
+                .then(function(response) {
+                d.resolve(response);
+            }, function(error) {
+                d.reject(error.data);
+            });
             return d.promise;
         }
 

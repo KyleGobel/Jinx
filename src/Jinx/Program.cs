@@ -46,8 +46,9 @@ namespace Jinx
         {
             Routes.Add<GetDatabases>("/database", "GET");
             Routes.Add<Database>("/database", "POST");
-            Routes.Add<GetJobs>("/job", "GET");
-            Routes.Add<Job>("/job", "POST");
+            Routes.Add<GetJobs>("/job", "GET")
+                .Add<Job>("/job", "POST")
+                .Add<GetJob>("/job/{JobId}", "GET");
             Routes
                 .Add<RunJob>("/runJob/{JobId}", "GET")
                 .Add<BuildModel>("/job/buildModel", "POST");

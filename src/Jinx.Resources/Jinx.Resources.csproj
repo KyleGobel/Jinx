@@ -74,6 +74,7 @@
     <EmbeddedResource Include="fonts\Material-Design-Icons.woff" />
     <EmbeddedResource Include="Views\Database.cshtml" />
     <EmbeddedResource Include="js\angular.min.js.map" />
+    <EmbeddedResource Include="Views\EditJob.cshtml" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\Shared\Layout.cshtml" />
     <EmbeddedResource Include="Jobs\Create.cshtml" />
@@ -114,6 +115,7 @@
     <EmbeddedResource Include="js\ui-ace.js" />
     <EmbeddedResource Include="css\toastr.css" />
     <EmbeddedResource Include="js\toastr.js" />
+    <EmbeddedResource Include="js\lodash.min.js" />
     <Content Include="js\ui-ace.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
