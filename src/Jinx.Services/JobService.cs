@@ -45,6 +45,14 @@ namespace Jinx.Services
             try
             {
                 var id = Db.Insert(job, true);
+                //create record in scheduler
+                var js = new JobSchedule
+                {
+                    Active = true,
+                    JobId = (int) id,
+                    Status = 0
+                };
+                Db.Insert(js);
                 return new HttpResult(HttpStatusCode.Created, "") { Location = "/job/{0}".Fmt(id)};
             }
             catch (Exception ex)

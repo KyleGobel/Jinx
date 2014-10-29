@@ -48,6 +48,8 @@
     <Compile Include="Types\Database.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Job.cs" />
+    <Compile Include="Types\JobActivityLog.cs" />
+    <Compile Include="Types\JobSchedule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

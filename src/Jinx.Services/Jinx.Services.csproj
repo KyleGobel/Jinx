@@ -73,6 +73,7 @@
     <Compile Include="CompilerService.cs" />
     <Compile Include="DatabaseService.cs" />
     <Compile Include="DynamicDataReader.cs" />
+    <Compile Include="IntervalExtensions.cs" />
     <Compile Include="JobService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionExtensions.cs" />
