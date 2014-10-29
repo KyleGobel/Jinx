@@ -1,20 +1,21 @@
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-primary">
+        <div class="panel panel-default">
             <div class="panel-heading">Destination Database</div>
             <div class="panel-body">
-                <label>
-                    Select your destination database
+                <div class="form-group form-group-info">
+                    <label class="control-label">
+                        Select your destination database
+                    </label>
                     <select ng-options="d.name for d in viewModel.databases" class="form-control" ng-model="viewModel.destinationDatabase"></select>
-                </label>
-                <br />
-                <label>
-                    Enter the destination table name
+                </div>
+                <div class="form-group form-group-info">
+                    <label class="control-label">
+                        Enter the destination table name
+                    </label>
                     <input type="text" class="form-control" ng-model="job.destinationTableName" placeholder="Destination Table Name" />
-                </label>
-                <br />
-                Create the C# Model of your destination table
-                <br /><br />
+                </div>
+                <span class="help-block">Create the C# Model of your destination table</span>
                 <div ui-ace="{
                              useWrapMode: true,
                              mode: 'csharp',

@@ -141,7 +141,7 @@ namespace Jinx.Services
         {
             var props = typeDictionary.Select(x => "public " + x.Value.Name + " " + x.Key + " {get; set;}");
             var properties = props.Aggregate((a, b) => a + "\n\t" + b);
-            string shell = "public class Model\n{\n\t" + properties + "\n}";
+            string shell = "using System;\n\npublic class SourceModel\n{\n\t" + properties + "\n}";
 
             return shell;
         }

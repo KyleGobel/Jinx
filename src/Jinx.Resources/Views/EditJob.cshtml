@@ -1,7 +1,7 @@
 ﻿@using ServiceStack.Html
 @inherits ServiceStack.Razor.ViewPage<Jinx.Models.Types.Job>
 @{
-    ViewBag.Title = "Create Job";
+    ViewBag.Title = "Edit Job";
     Layout = "~/Views/Shared/Layout.cshtml";
 }
 
@@ -14,13 +14,8 @@
 }
 <div ng-app="jinx" ng-controller="editJobCtrl">
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <input type="text" class="form-control" ng-model="job.name" placeholder="Job Name" />
-            </div>
-        </div>
-        <br /><br />
-        <button data-toggle="modal" data-target="#myModal">Show</button>
+
+        <div ng-include="'/templates/generalJobProperties.html'"></div>
         <div ng-include="'/templates/model.html'"></div>
         <div ng-include="'/templates/sourceDatabaseAndQuery.html'"></div>
         <div ng-include="'/templates/sourceDataModel.html'"></div>

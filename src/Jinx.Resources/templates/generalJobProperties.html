@@ -1,0 +1,38 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">General Job Properties</div>
+            <div class="panel-body">
+                <div class="form-group form-group-info">
+                    <label class="control-label">
+                        Job Name
+                    </label>
+                    <input type="text" class="form-control" ng-model="job.name" placeholder="Name" />
+                </div>
+                <div class="form-group form-group-info">
+                    <label class="control-label">
+                        Job Description
+                    </label>
+                    <textarea ng-model="job.description" class="form-control" cols="250" rows="4"></textarea>
+                    <span class="help-block">What will your job do?</span>
+                </div>
+                <form class="form-inline">
+                    <fieldset>
+                        <legend>Job Interval</legend>
+                        <div class="form-group form-group-info">
+                            <label class="control-label">
+                                Hours
+                            </label>
+                            <input type="number" class="form-control" ng-model="viewModel.hours" />
+                            <label class="control-label">
+                                Minutes
+                            </label>
+                            <input type="number" class="form-control" ng-model="viewModel.minutes" />
+                            <span class="help-block">How long should we wait to start your job again after it finishes?</span>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

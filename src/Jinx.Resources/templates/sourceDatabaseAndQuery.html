@@ -1,17 +1,17 @@
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-primary">
+        <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Source Database & Query</h3>
             </div>
             <div class="panel-body">
-                <label>
-                    Select a database
+                <div class="form-group form-group-info">
+                    <label class="control-label">
+                        Select a database
+                    </label>
                     <select class="form-control" ng-model="viewModel.sourceDatabase" ng-options="d.name for d in viewModel.databases"></select>
-                </label>
-                <br />
-                <label>Enter your source sql query (the query that will get the data we want to perform an operation on)</label>
-                <br />
+                </div>
+                <span class="help-block">Enter your source sql query (the query that will get the data we want to perform an operation on)</span>
                 <div ui-ace="aceOption" ng-model="job.sourceSql"></div>
             </div>
         </div>
