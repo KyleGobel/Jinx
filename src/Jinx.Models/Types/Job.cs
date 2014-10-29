@@ -8,6 +8,7 @@ namespace Jinx.Models.Types
         [AutoIncrement]
         public int JobId { get; set; }
         public string Name { get; set; } 
+        public string Description { get; set; }
         public long Interval { get; set; }
         public string SourceSql { get; set; }
         public int SourceDatabaseId { get; set; }

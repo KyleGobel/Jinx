@@ -13,20 +13,12 @@
     }
     <div ng-app="jinx" ng-controller="jobCtrl">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <input type="text" class="form-control" ng-model="job.name" placeholder="Job Name" />
-                </div>
-            </div>
-            <br /><br />
-            <button data-toggle="modal" data-target="#myModal">Show</button>
+            <div ng-include="'/templates/generalJobProperties.html'"></div>
             <div ng-include="'/templates/model.html'"></div>
             <div ng-include="'/templates/sourceDatabaseAndQuery.html'"></div>
             <div ng-include="'/templates/sourceDataModel.html'"></div>
             <div ng-include="'/templates/destinationDatabase.html'"></div>
             <div ng-include="'/templates/mapReduce.html'"></div>
-
-       
             <div class="row">
                 <div class="col-md-12" style="text-align:right">
                     <button class="btn btn-primary btn-lg" ng-click="addJob()">Save</button>
@@ -58,15 +50,17 @@
                             }, function(error) {
                                 toastr.error(error);
                             });
-
+                        $scope.viewModel.hours = 1;
+                        $scope.viewModel.minutes = 0;
                         $scope.job.destinationModelCs = "public class DestinationModel\n{\n\t//Destination table columns here\n}";
-                        $scope.job.mapCs = "public List<DestinationModel> Transform(List<SourceModel> data)\n{\n\t//transform data here\n}";
+                        $scope.job.mapCs = "using System.Collections.Generic;\n\npublic class Transformer\n{\n\tpublic static List<DestinationModel> Transform(List<SourceModel> data)\n\t{\n\t\t//transform data here\n\t}\n}";
                     }
 
                     $scope.addJob = function() {
                         if (typeof $scope.viewModel.sourceDatabase.databaseId === "undefined") {
                             toastr.error("Must select a database");
                         }
+                        $scope.job.interval = ($scope.viewModel.hours * 3600000) + ($scope.viewModel.minutes * 60000);
                         $scope.job.sourceDatabaseId = $scope.viewModel.sourceDatabase.databaseId;
                         $scope.job.destinationDatabaseId = $scope.viewModel.destinationDatabase.databaseId;
                         jobApi.insert($scope.job)
@@ -92,14 +86,14 @@
                     }
 
                     $scope.compile = function() {
-                        compileApi.compileAll($scope.job.sourceModelCs,$scope.job.destinationModelCs,$scope.job.mapCs)
-                          .then(function (response) {
-                              $scope.modal.title = "Job Compile Results";
-                              $scope.modal.body = response;
-                              $("#modal").modal();
-                          }, function (error) {
-                              toastr.error(error);
-                          });
+                        compileApi.compileAll($scope.job.sourceModelCs, $scope.job.destinationModelCs, $scope.job.mapCs)
+                            .then(function(response) {
+                                $scope.modal.title = "Job Compile Results";
+                                $scope.modal.body = response;
+                                $("#modal").modal();
+                            }, function(error) {
+                                toastr.error(error);
+                            });
                     }
 
                     $scope.compileDestinationModel = function() {
