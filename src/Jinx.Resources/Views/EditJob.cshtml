@@ -12,17 +12,16 @@
         }
     </style>
 }
+j
 <div ng-app="jinx" ng-controller="editJobCtrl">
     <div class="container">
-
+        <h1>@ViewBag.Title</h1>
         <div ng-include="'/templates/generalJobProperties.html'"></div>
         <div ng-include="'/templates/model.html'"></div>
         <div ng-include="'/templates/sourceDatabaseAndQuery.html'"></div>
         <div ng-include="'/templates/sourceDataModel.html'"></div>
         <div ng-include="'/templates/destinationDatabase.html'"></div>
         <div ng-include="'/templates/mapReduce.html'"></div>
-
-
         <div class="row">
             <div class="col-md-12" style="text-align:right">
                 <button class="btn btn-primary btn-lg" ng-click="updateJob()">Save</button>
@@ -49,6 +48,8 @@
                         theme: 'github',
                     }
 
+                    $scope.viewModel.hours = Math.floor($scope.job.interval / 3600000);
+                    $scope.viewModel.minutes = ($scope.job.interval % 3600000) / 60000 ;
                     databaseApi.getAll()
                         .then(function(results) {
                             $scope.viewModel.databases = results;
@@ -60,6 +61,7 @@
                 }
 
                 $scope.updateJob = function() {
+                    $scope.job.interval = $scope.viewModel.hours * 3600000 + ($scope.viewModel.minutes * 60000);
                     jobApi.update($scope.job).then(function() {
                         toastr.success("Job successfully updated");
                     }, function(error) {

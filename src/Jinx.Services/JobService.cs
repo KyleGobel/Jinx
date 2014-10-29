@@ -53,6 +53,22 @@ namespace Jinx.Services
             }
         }
 
+        public HttpResult Put(Job job)
+        {
+            if (job == null || job.JobId == default(int))
+            {
+                return new HttpResult(HttpStatusCode.BadRequest, "Job needs an id to be updated");
+            }
+            try
+            {
+                Db.Update(job);
+                return new HttpResult(HttpStatusCode.NoContent,"Updated Successfully");
+            }
+            catch (Exception ex)
+            {
+               return new HttpResult(HttpStatusCode.BadRequest, ex.Message.Replace("\r\n", "")); 
+            }
+        }
         public object Get(RunJob runJobRequest)
         {
             if (runJobRequest == null || runJobRequest.JobId == default(int))
@@ -122,6 +138,7 @@ namespace Jinx.Services
             return 0;
         }
 
+     
         public HttpResult Post(BuildModel request)
         {
             if (request == null || request.DatabaseId == default(int) || request.Sql.IsNullOrEmpty())

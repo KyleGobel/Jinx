@@ -77,7 +77,7 @@
     <EmbeddedResource Include="Views\EditJob.cshtml" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\Shared\Layout.cshtml" />
-    <EmbeddedResource Include="Jobs\Create.cshtml" />
+    <EmbeddedResource Include="Job\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="css\material-wfont.css" />
